@@ -1,0 +1,16 @@
+DROP POLICY IF EXISTS "brand assets admin read" ON storage.objects;
+DROP POLICY IF EXISTS "brand assets admin insert" ON storage.objects;
+DROP POLICY IF EXISTS "brand assets admin update" ON storage.objects;
+DROP POLICY IF EXISTS "brand assets admin delete" ON storage.objects;
+DROP POLICY IF EXISTS "parcel photos own upload" ON storage.objects;
+DROP POLICY IF EXISTS "parcel photos read" ON storage.objects;
+DROP POLICY IF EXISTS "deposit proofs own upload" ON storage.objects;
+DROP POLICY IF EXISTS "deposit proofs read" ON storage.objects;
+CREATE POLICY "brand assets admin read" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'brand-assets' AND public.has_role(auth.uid(),'admin'));
+CREATE POLICY "brand assets admin insert" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'brand-assets' AND public.has_role(auth.uid(),'admin'));
+CREATE POLICY "brand assets admin update" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'brand-assets' AND public.has_role(auth.uid(),'admin'));
+CREATE POLICY "brand assets admin delete" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'brand-assets' AND public.has_role(auth.uid(),'admin'));
+CREATE POLICY "parcel photos own upload" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'parcel-photos' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "parcel photos read" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'parcel-photos' AND ((storage.foldername(name))[1] = auth.uid()::text OR public.is_staff(auth.uid())));
+CREATE POLICY "deposit proofs own upload" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'deposit-proofs' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "deposit proofs read" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'deposit-proofs' AND ((storage.foldername(name))[1] = auth.uid()::text OR public.has_role(auth.uid(),'admin')));

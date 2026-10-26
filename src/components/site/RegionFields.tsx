@@ -1,0 +1,6 @@
+import { INDIAN_STATES } from '@/lib/india-regions';
+import districts from '@/data/india-districts.json';
+export function RegionFields({state,district,onChange,prefix=''}:{state:string;district:string;onChange:(state:string,district:string)=>void;prefix?:string}) {
+ const names=(districts as Record<string,string[]>)[state] ?? [];
+ return <><label className="block text-xs font-semibold">State<select aria-label={`${prefix} state`.trim()} value={state} onChange={e=>onChange(e.target.value,'')} className="mt-1 h-11 w-full rounded-md border bg-background px-3"><option value="">Select state</option>{INDIAN_STATES.map(s=><option key={s}>{s}</option>)}</select></label><label className="block text-xs font-semibold">District<input aria-label={`${prefix} district`.trim()} list={`${prefix}-districts`} value={district} onChange={e=>onChange(state,e.target.value.slice(0,80))} placeholder="Select or type district" className="mt-1 h-11 w-full rounded-md border bg-background px-3"/><datalist id={`${prefix}-districts`}>{names.map(s=><option key={s} value={s}/>)}</datalist></label></>;
+}

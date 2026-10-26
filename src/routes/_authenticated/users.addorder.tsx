@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { AppShell, PageHeader } from "@/components/site/AppShell";
+import { BookingForm } from "@/components/site/BookingForm";
+export const Route = createFileRoute("/_authenticated/users/addorder")({ head: () => ({meta:[{title:"Add order — Get Xpress"},{name:"description",content:"Book a new Get Xpress pickup."},{property:"og:title",content:"Add order — Get Xpress"},{property:"og:description",content:"Book a new Get Xpress pickup."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}), component: () => <AppShell wide><PageHeader title="Add order" sub="Pickup, delivery, parcels and payment in four quick steps." /><div className="rounded-2xl border bg-card p-5 lg:p-8"><BookingForm /></div></AppShell> });

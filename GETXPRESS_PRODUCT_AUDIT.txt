@@ -1,0 +1,68 @@
+GetXpress product audit — 25 October 2026
+
+WHAT WAS REVIEWED
+- Public flow: landing (/), ship booking (/ship), calculator (/calculator), tracking (/track), international quote (/international), hub application (/point-partner), auth and help.
+- Authenticated user flow: dashboard, orders, add order, payments, returns, wallet, notifications, settings and phone verification.
+- Staff/admin flow: dashboard, orders, scan, bags, manifests, labels, routes, pincodes, team/staff, commissions, payouts, coupons, gateways, SMTP, diagnostics, audit, company/settings and developer console.
+- Supabase migrations, typed client, server functions, role guards and booking tests were inspected.
+
+CHANGES COMPLETED
+- Landing hero now uses an original three-slide transparent artwork carousel with slow 1.65s image-only glass transitions, a 9s progress bar, preloading, reduced-motion support and a slow multicolor aurora background.
+- Hero headline, eyebrow and description now use Framer Motion cross-fade/slide transitions. The phone number form stays in the hero; OTP is entered inline and successful verification routes to /dashboard. No redirect to auth is required for this path.
+- Added “Already sent a parcel?” tracking card to the landing page. It accepts AWB, parcel ID or GXI reference and opens /track.
+- “Made for the everyday hustle” is a desktop GSAP pinned horizontal timeline with scrub smoothing and image parallax; mobile becomes touch-friendly horizontal snap scrolling.
+- The timeline now includes a scroll-linked gradient progress rail so desktop progress is visible without adding controls; mobile keeps native touch scrolling.
+- Parcel size guide and From door to door cards now use Framer Motion while-in-view and hover motion, plus GSAP reveal/parallax hooks and clearer card surfaces.
+- Ship a parcel section received a dedicated mobile layout treatment; tracking, booking and hero controls are responsive on narrow screens.
+- Worldwide suggestions use authenticated Google Places when configured, then free OpenStreetMap Photon/Nominatim fallback. Nominatim now has a valid User-Agent, English response language and country filtering. India continues to use the local postal directory first.
+- Router preloads on intent and keeps loaded route data for 30 seconds to reduce repeat loading when switching pages.
+
+SUPABASE / DATA MODEL OBSERVATIONS
+- Core entities exist: profiles, shipments, shipment_pieces, tracking_events, payments, returns, international_quote_requests, point_applications, pincodes, pincode_allocations, staff_scopes, user_roles, bags, bag_items, manifests, wallets, commissions, notifications and audit logs.
+- Roles are admin, point, network, state_director, state_manager and area_manager. Route-level guards and database RLS/RPCs are present; server functions should remain the authority for prices, staff assignment, international rates and wallet debits.
+- OTP tables and server functions exist. The current configured provider is test/dev unless an SMS provider is configured, so the UI can expose a test code. Production requires SMTP/SMS provider secrets and rate-limit monitoring.
+- International bookings correctly remain authenticated quote requests until staff/provider review; they are not treated as instant dispatches.
+- Google Places is optional and authenticated; do not expose a browser API key. Free OSM fallback is suitable for suggestions but must remain rate-limited and cached.
+
+REMAINING GAPS / RECOMMENDATIONS
+- Add a real SMS OTP provider and production abuse controls before launch; never display devCode in production.
+- Configure SMTP, payment gateway, courier provider and ShipGlobal credentials in server secrets/admin settings; keep all keys out of browser bundles and table data where possible.
+- Add automated end-to-end tests for customer OTP→dashboard, booking→payment, tracking, point/hub wallet debit, staff scope restrictions and admin role boundaries against a QA database.
+- Add monitoring for server-function errors, map-provider quota/fallback rate, booking conversion, OTP failures and Core Web Vitals on mobile.
+- Keep generated hero artwork optimized (AVIF/WebP derivatives and responsive srcsets) if the asset library grows; avoid loading admin-only bundles on public pages.
+- Manual admin login and live booking/hub testing could not be executed in this environment because browser-control access is disabled. Code routes, guards, migrations and available tests were inspected instead.
+- Runtime SSR smoke-check passed for /, /ship, /calculator, /track, /point-partner, /international and /auth (HTTP 200 each). Automated suite passed 21 files / 91 tests.
+
+DO NOT REMOVE
+- Local India postal directory, server-side price calculation, policy/prohibited-item validation, role/RLS checks, hub wallet trigger, audit logs and international quote review state.
+
+SCREEN-BY-SCREEN OPERATIONS REVIEW — 25 October 2026
+- Landing mobile: visual hierarchy is strong; hero artwork stays separate from the copy and the inline OTP entry remains visible. Keep hero image height capped on small screens so “Start with your mobile number” remains above the fold.
+- Admin dashboard: useful operational shortcuts and scoped metrics exist. Add alerts for overdue pickup, unassigned shipment, failed payment, failed scan and SLA breach—not only total counts.
+- Orders: status tabs, date/PIN filters, exports and labels are present. Next improvement is a bulk-action toolbar with permissioned status transitions, assignment and reconciliation state.
+- Returns & RTO: request creation exists. Missing for production operations: reason taxonomy, photo evidence, pickup SLA, disposition (return-to-sender / restock / destroy), refund linkage and an owner.
+- Scan / delivery tally: scan flow and audit entries work. Add scan idempotency feedback, required exception reason/photo, GPS/time capture and proof-of-delivery recipient/OTP/signature.
+- Dispatch centre / bags / manifest: bags, seals, routes and manifests are in place. Replace free-text from/to fields with approved hub/route selection and block dispatch if a bag is unsealed, empty or has a route mismatch.
+- Staff, areas and PIN allocation: role and territory UI is complete. Require two-person approval for admin/state-role changes and show a dry-run conflict report before bulk allocations.
+- Customer records: phone-only placeholder emails were visible in the screenshot. Code now hides both legacy @phone.bnoy.app and current @phone.getxpress.in placeholders, preventing accidental customer email sends and privacy leakage.
+- Wallet / manual gateway: manual UPI deposits are a valid no-key fallback. Before real money use, add maker-checker approval, immutable UTR duplicate detection, downloadable reconciliation and payout approval limits.
+- Developer / audit: public endpoint list and audit events exist. Do not publish private LAN URLs in production; use the HTTPS production base URL and signed webhook verification.
+
+SMTP AND GOOGLE AUTH STATUS
+- SMTP failure is caused by missing server credentials, not by the template/test UI. A host and username in the database cannot authenticate without the deployed SMTP_PASSWORD secret. The failure text now states the exact missing configuration instead of only “SMTP is not enabled yet”.
+- Google sign-in button and OAuth call already exist in /auth. The remaining Supabase/Google Console configuration cannot be safely invented: it needs the Google OAuth Client ID and Client Secret, plus registered callback and redirect URLs. The Supabase OAuth Server page shown in the screenshot is for making GetXpress an OAuth provider; it is not where Google login is enabled.
+
+LATEST UI DELIVERY — 25 October 2026
+- Scan parcel is now a two-step operational workbench: identify the parcel first, confirm its route, choose a descriptive status card, capture location/note, see exception guidance, then record the scan. This reduces accidental status changes compared with the former dense single-column form.
+- Admin sidebar now has a calmer layered navy surface, branded divider, focused search state, active-route rail, refined profile dock and cleaner header shadow.
+- International calculator item entry now separates product details from the weight decision. Weight per item has a dedicated estimate-impact card, unit label and quick presets; it no longer competes with product, quantity and declared value in one crowded row.
+- Latest verification after these changes: 21 test files / 91 tests pass and production build passes.
+
+LATEST REFINEMENT — 26 October 2026
+- Mobile hero artwork height is now capped more tightly, so the headline and inline mobile-number/OTP entry reach the first screen sooner without removing the artwork.
+- The landing tracking form switches to a full-width stacked control on narrow phones, preventing the input and “Track parcel” button from being compressed.
+- Compact booking location headers were rebuilt from separate semantic direction, Hindi and country elements. “From / भेजने वाला / India” and “To / पाने वाला / India” no longer run together, and each PIN field gets its own focused card surface.
+- Promo code now has a clearer focus/claim state, preserving the server-side coupon preview. GST was already calculated server-side at 18%, listed in the estimate and booking receipt, and included in the total; this was verified rather than duplicated in client-only code.
+- Mobile “Made for the everyday hustle” cards now use right-origin native horizontal scroll, scroll snap and smooth touch scrolling. Desktop keeps the GSAP scroll-linked rail.
+- International comparison now exposes safe useful quote data: actual, volumetric and chargeable weight, destination zone when known, delivery window and rebranded fulfilment network. Provider base costs, API keys and markup remain server-only.
+- The observed unstyled scan screenshot is not consistent with the current route/source: the scan route has a dedicated two-panel workbench CSS. Production build now confirms the scan styles compile into the shared stylesheet; refresh the local dev tab once to receive the current bundle.

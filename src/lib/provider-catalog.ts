@@ -1,0 +1,7 @@
+export const PROVIDERS=[
+{id:'ekart',name:'Ekart',kind:'Courier',docs:'https://www.ekartlogistics.in/faq',auth:'Account onboarding and product-specific integration credentials.',features:'Shipment creation, updates, RTO and tracking. Exact API authentication must be confirmed with Ekart.'},
+{id:'delhivery',name:'Delhivery',kind:'Courier',docs:'https://help.delhivery.com/docs/api-token-generation',auth:'Delhivery One API token and pickup/warehouse setup.',features:'Courier shipping and tracking; WhatsApp shipment communications are an optional account service.'},
+{id:'shiprocket',name:'Shiprocket',kind:'Courier aggregator',docs:'https://apidocs.shiprocket.in/',auth:'API user credentials exchanged for a Bearer token.',features:'Orders, serviceability, courier allocation, labels, pickup and tracking.'},
+{id:'shadowfax',name:'Shadowfax',kind:'Courier',docs:'https://developer.shadowfax.in/docs/reference/authentication',auth:'Product-specific static token or OAuth2 client credentials.',features:'Shipping and tracking. Pickup/drop OTP options depend on product and account configuration.'},
+{id:'tezsender',name:'Tezsender',kind:'WhatsApp messaging',docs:'https://tezsender.in/docs',auth:'Documentation requires sign-in; API authentication and endpoints are not yet verified.',features:'Advertised WhatsApp OTP and messaging. Images, URLs and delivery callbacks require authenticated documentation review.'},
+] as const;

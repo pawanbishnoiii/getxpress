@@ -1,0 +1,5 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { BookingForm } from "@/components/site/BookingForm";
+import { SiteNav } from "@/components/site/SiteNav";
+import { SiteFooter } from "@/components/site/SiteFooter";
+export const Route=createFileRoute("/ship")({head:()=>({meta:[{title:"Book a shipment — Get Xpress"},{name:"description",content:"Choose parcels, compare delivery speeds and arrange a Get Xpress pickup."},{property:"og:title",content:"Book a shipment — Get Xpress"},{property:"og:description",content:"Doorstep courier booking with flexible parcel sizes."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=> <><SiteNav/><main className="mx-auto max-w-5xl px-4 pb-16 pt-28"><BookingForm/></main><SiteFooter/></>});
